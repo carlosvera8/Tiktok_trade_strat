@@ -1,0 +1,11 @@
+yfinance>=0.2.36
+pandas>=2.0
+numpy>=1.26
+torch>=2.1
+matplotlib>=3.8
+seaborn>=0.13
+tqdm>=4.66
+einops==0.8.1
+huggingface_hub>=0.33.1
+safetensors>=0.4.0
+transformers>=4.40
