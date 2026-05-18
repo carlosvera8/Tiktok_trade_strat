@@ -210,3 +210,6 @@ __marimo__/
 data/cache/
 reports/output/
 paper_trade/portfolio.json
+
+# Email credentials — never commit
+email_creds.py

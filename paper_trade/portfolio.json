@@ -2,14 +2,22 @@
   "cash": 0.0,
   "positions": {
     "TSLA": {
-      "shares": 22.558087695392018,
-      "entry_price": 443.29998779296875
+      "shares": 11.279043847696009,
+      "entry_price": 422.239990234375
+    },
+    "META": {
+      "shares": 7.753550812465671,
+      "entry_price": 614.22998046875
     }
   },
   "history": [
     {
       "date": "2026-05-15",
       "value": 10000.0
+    },
+    {
+      "date": "2026-05-18",
+      "value": 9524.93
     }
   ],
   "trade_log": [
@@ -19,6 +27,30 @@
       "action": "buy",
       "shares": 22.5581,
       "price": 443.29998779296875,
+      "pnl": 0
+    },
+    {
+      "date": "2026-05-18",
+      "ticker": "TSLA",
+      "action": "sell",
+      "shares": 22.558087695392018,
+      "price": 422.239990234375,
+      "pnl": -475.07
+    },
+    {
+      "date": "2026-05-18",
+      "ticker": "TSLA",
+      "action": "buy",
+      "shares": 11.279,
+      "price": 422.239990234375,
+      "pnl": 0
+    },
+    {
+      "date": "2026-05-18",
+      "ticker": "META",
+      "action": "buy",
+      "shares": 7.7536,
+      "price": 614.22998046875,
       "pnl": 0
     }
   ]
