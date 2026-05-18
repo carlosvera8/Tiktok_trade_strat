@@ -16,11 +16,11 @@ TOKENIZER_NAME = "NeoQuasar/Kronos-Tokenizer-base"
 DEVICE = "cpu"  # change to "cuda" if GPU is available
 
 # --- Strategy ---
-TICKERS = ["AAPL", "MSFT", "TSLA", "GOOGL", "SPY"]
+TICKERS = ["AAPL", "MSFT", "TSLA", "GOOGL", "NVDA", "META", "AMZN", "NFLX", "SPY"]
 BENCHMARK_TICKER = "SPY"
 
 # Backtest window
-BACKTEST_START = "2022-01-01"
+BACKTEST_START = "2015-01-01"
 BACKTEST_END = "2024-12-31"
 
 # Kronos context/prediction settings
@@ -30,9 +30,9 @@ REBALANCE_EVERY = 5 # rebalance portfolio every N candles
 
 # Portfolio
 INITIAL_CAPITAL = 10_000.0
-TOP_K = 2           # hold top-K ranked tickers at any time
+TOP_K = 3           # hold top-K ranked tickers at any time
 
 # Kronos sampling params (controls randomness)
-TEMPERATURE = 1.0
+TEMPERATURE = 0.7
 TOP_P = 0.9
-SAMPLE_COUNT = 3    # average N samples for more stable predictions
+SAMPLE_COUNT = 5    # average N samples for more stable predictions

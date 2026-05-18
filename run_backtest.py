@@ -25,10 +25,10 @@ from reports.visualizer import plot_equity_curve, plot_signal_heatmap
 
 def main():
     print("=" * 50)
-    print("  Kronos Backtest — Historical Validation")
+    print("  Kronos Backtest - Historical Validation")
     print("=" * 50)
     print(f"\n  Tickers   : {', '.join(TICKERS)}")
-    print(f"  Period    : {BACKTEST_START} → {BACKTEST_END}")
+    print(f"  Period    : {BACKTEST_START} to {BACKTEST_END}")
     print(f"  Model     : {MODEL_NAME}\n")
 
     # 1. Fetch data

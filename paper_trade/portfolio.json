@@ -1,0 +1,25 @@
+{
+  "cash": 0.0,
+  "positions": {
+    "TSLA": {
+      "shares": 22.558087695392018,
+      "entry_price": 443.29998779296875
+    }
+  },
+  "history": [
+    {
+      "date": "2026-05-15",
+      "value": 10000.0
+    }
+  ],
+  "trade_log": [
+    {
+      "date": "2026-05-15",
+      "ticker": "TSLA",
+      "action": "buy",
+      "shares": 22.5581,
+      "price": 443.29998779296875,
+      "pnl": 0
+    }
+  ]
+}

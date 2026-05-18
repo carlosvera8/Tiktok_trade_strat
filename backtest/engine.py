@@ -2,9 +2,11 @@ import sys
 sys.path.insert(0, str(__import__('pathlib').Path(__file__).parent.parent))
 sys.path.insert(0, str(__import__('pathlib').Path(__file__).parent.parent / "kronos"))
 
+import os
 import pandas as pd
 import numpy as np
 from dataclasses import dataclass, field
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
 
 from config import (
@@ -30,6 +32,23 @@ def _build_predictor(model_name: str, tokenizer_name: str, device: str):
     model.to(device)
     model.eval()
     return KronosPredictor(model, tokenizer, max_context=LOOKBACK)
+
+
+def _predict_one_ticker(predictor, ticker, df, date, step, all_dates) -> tuple[str, float | None]:
+    """Prepare inputs and run Kronos for a single ticker. Safe to call from threads."""
+    import torch
+    torch.set_num_threads(1)  # prevent each thread competing for all CPU cores
+
+    available = df.index[df.index <= date]
+    if len(available) < LOOKBACK:
+        return ticker, None
+    window = df.loc[available[-LOOKBACK:]]
+    x_ts = pd.Series(window.index)
+    if step + PRED_LEN >= len(all_dates):
+        return ticker, None
+    y_ts = pd.Series(all_dates[step + 1: step + PRED_LEN + 1])
+    pred_return = _predict_return(predictor, window.reset_index(), x_ts, y_ts)
+    return ticker, pred_return
 
 
 def _predict_return(predictor, df_slice: pd.DataFrame, x_ts: pd.Series, y_ts: pd.Series) -> float:
@@ -88,28 +107,24 @@ def run_backtest(
     entry_prices: dict[str, float] = {}
 
     rebalance_steps = range(start_idx, len(all_dates) - PRED_LEN, REBALANCE_EVERY)
+    tickers_to_predict = [t for t in ticker_data if t != benchmark_ticker]
+    num_workers = min(len(tickers_to_predict), os.cpu_count() or 4)
 
     for step in tqdm(rebalance_steps, desc="Backtesting"):
         date = all_dates[step]
 
-        # --- Generate signals ---
+        # --- Generate signals in parallel (one thread per ticker) ---
         signals: dict[str, float] = {}
-        for ticker, df in ticker_data.items():
-            if ticker == benchmark_ticker:
-                continue
-            available = df.index[df.index <= date]
-            if len(available) < LOOKBACK:
-                continue
-            window = df.loc[available[-LOOKBACK:]]
-            x_ts = pd.Series(window.index)
-            future_end = step + PRED_LEN
-            if future_end >= len(all_dates):
-                continue
-            future_dates = all_dates[step + 1: step + PRED_LEN + 1]
-            y_ts = pd.Series(future_dates)
-            pred_return = _predict_return(predictor, window.reset_index(), x_ts, y_ts)
-            signals[ticker] = pred_return
-            prediction_log.append({"date": date, "ticker": ticker, "predicted_return": pred_return})
+        with ThreadPoolExecutor(max_workers=num_workers) as executor:
+            futures = {
+                executor.submit(_predict_one_ticker, predictor, ticker, ticker_data[ticker], date, step, all_dates): ticker
+                for ticker in tickers_to_predict
+            }
+            for future in as_completed(futures):
+                ticker, pred_return = future.result()
+                if pred_return is not None:
+                    signals[ticker] = pred_return
+                    prediction_log.append({"date": date, "ticker": ticker, "predicted_return": pred_return})
 
         if not signals:
             equity_points[date] = capital
